@@ -13,8 +13,6 @@ export default function AppRoutes() {
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="RemaindersList" component={RemaindersList} />
         <Stack.Screen name="AddReminderScreen" component={AddReminderScreen} />
-
-        {/* <Stack.Screen /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
