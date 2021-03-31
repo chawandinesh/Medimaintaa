@@ -23,6 +23,16 @@ export default function HomeScreen(props) {
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTitleAlign: 'center',
+      headerRight: () => {
+        return (
+          <Icon
+            name="add"
+            type="Ionicons"
+            style={{marginRight: 10}}
+            onPress={() => props.navigation.navigate('AddReminderScreen')}
+          />
+        );
+      },
     });
   }, [props.navigation]);
   const cards = [
@@ -41,7 +51,7 @@ export default function HomeScreen(props) {
 
   const renderItem = ({item, index}) => {
     return (
-      <View style={{height: height * 0.05, width: width }}>
+      <View style={{height: height * 0.05, width: width}}>
         <Text> {item.text} </Text>
       </View>
     );
