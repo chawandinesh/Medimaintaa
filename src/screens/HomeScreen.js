@@ -1,62 +1,146 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Modal,Pressable, ImageBackground} from 'react-native';
-import moment from 'moment'
+import {
+  TouchableOpacity,
+  Vibration,
+  Alert,
+  StyleSheet,
+  Modal,
+  Pressable,
+  ImageBackground,
+} from 'react-native';
+import moment from 'moment';
 import {View, Text, Dimensions} from 'react-native';
-import {MediMaintaaContext} from '../context/context'
+import PushNotification from "react-native-push-notification";
+import {MediMaintaaContext} from '../context/context';
 import {useIsFocused} from '@react-navigation/native';
 
 const {height, width} = Dimensions.get('window');
 
 export default function HomeScreen(props) {
-  const {state,setState} = React.useContext(MediMaintaaContext)
+  const {state, setState} = React.useContext(MediMaintaaContext);
   const [modalVisible, setModalVisible] = React.useState(false);
   const isFocused = useIsFocused();
+
+
+  // PushNotification.configure({
+  //   onRegister: function (token) {
+  //     console.log("TOKEN:", token);
+  //   },
+  //   // onNotification: function (notification) {
+  //   //   console.log("NOTIFICATION:", notification);
+  //   //   notification.finish(PushNotificationIOS.FetchResult.NoData);
+  //   // },
+  //   // onAction: function (notification) {
+  //   //   console.log("ACTION:", notification.action);
+  //   //   console.log("NOTIFICATION:", notification);
+  //   // },
+  //   // onRegistrationError: function(err) {
+  //   //   console.error(err.message, err);
+  //   // },
+  //   // permissions: {
+  //   //   alert: true,
+  //   //   badge: true,
+  //   //   sound: true,
+  //   // },
+  //   popInitialNotification: true,
+  //   requestPermissions: true,
+  // });
+
   const getInitialData = async () => {};
+  PushNotification.localNotification({
+    id:4
+  });
+
 
   React.useEffect(() => {
     getInitialData();
   }, [props.navigation, isFocused]);
 
+  if (props.route.name === 'HomeScreen') {
+    state.map((e, idx) => {
+      // console.log(e.endDate, e, moment().format('YYYY-MM-DD'));
+      if (e.endDate === moment().format('YYYY-MM-DD')) {
+        Vibration.vibrate(100)
+        Alert.alert(
+          'Remainder',
+          `${e.nameOfPill} was reached ${e.endDate}`,
+          [
+            {
+              text: 'Update',
+              onPress: () =>
+                props.navigation.navigate('AddReminderScreen', {idx: idx}),
+              style: 'cancel',
+            },
+            {
+              text: 'Delete',
+              onPress: () =>
+                setState(state.filter((e, index) => index !== idx)),
+            },
+            {
+              cancelable: true,
+              onDismiss: () =>
+                Alert.alert(
+                  "This alert was dismissed by tapping outside of the alert dialog."
+                ),
+            }
+          ],
+        );
+      }
+    });
+  }
+
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTitleAlign: 'center',
-      headerShown: false
+      headerShown: false,
     });
-    state.map((e) => {
-      console.log(e.endDate, moment().format("YYYY-MM-DD"))
-      // if(e.endDate === moment().format("YYYY-MM-DD")){
-      //   alert("e", e.endDate)
-      // }
-    })
+
+    // state.map(e => {
+    //   // console.log(e.endDate, moment().format("YYYY-MM-DD"))
+    //   // if(e.endDate === moment().format("YYYY-MM-DD")){
+    //   //   alert("e", e.endDate)
+    //   // }
+    // });
   }, [props.navigation, isFocused]);
-  console.log(state)
-  console.log(moment().format("YYYY-MM-DD"))
+  // console.log(state)
+  // console.log(moment().format("YYYY-MM-DD"))
 
   // React.useEffect(() => {
-  //   state.map((e) => {
-  //     console.log(e.endDate, moment().format("YYYY-MM-DD"))
-  //     if(e.endDate === moment().format("YYYY-MM-DD")){
-  //       alert('e',e.nameOfPill)
+  //   // state.map((e) => {
+  //   //   console.log(e.endDate, moment().format("YYYY-MM-DD"))
+  //   //   if(e.endDate === moment().format("YYYY-MM-DD")){
+  //   //     alert('e',e.nameOfPill)
+  //   //   }
+  //   // })
+  //   state.map(e => {
+  //     console.log(e.endDate, moment().format('YYYY-MM-DD'))
+  //     if (e.endDate === moment().format('YYYY-MM-DD')) {
+  //       alert('done');
   //     }
-  //   })
-  // }, props.navigation)
+  //   });
+  // }, []);
+
   return (
-    <ImageBackground source={require('../assets/img.png')} style={{height, width}}>
+    <ImageBackground
+      source={require('../assets/img.png')}
+      style={{height, width}}>
       <View
         style={{
           width,
           height: height * 0.5,
           justifyContent: 'center',
           alignItems: 'center',
-      
         }}>
-          <View style={{borderWidth:3, backgroundColor:'#fff'}}>
-
-        <Text
-          style={{fontSize: height * 0.05, fontWeight: 'bold', color: '#e65c53'}}>
-          MEDIMAINTAA
-        </Text>
-          </View>
+        <View style={{borderWidth: 3, backgroundColor: '#fff'}}>
+          <Text
+            style={{
+              fontSize: height * 0.05,
+              fontWeight: 'bold',
+              color: '#e65c53',
+            }}>
+            MEDIMAINTAA
+          </Text>
+        </View>
       </View>
       <View style={{width, height: height * 0.4, justifyContent: 'center'}}>
         <TouchableOpacity
@@ -113,11 +197,23 @@ export default function HomeScreen(props) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>About Us</Text>
-            <Text style={{textAlign:'center'}}>This is simple and Amazing app</Text>
-            <Text style={{textAlign:'center'}}>In this app, user can create his medicine reminder for the medicines</Text>
-            <Text style={{textAlign:'center'}}>The user can Manage is Medicine record, makes easy for changes and erase the each record</Text>
-            <Text style={{textAlign:'center'}}>User can view the record in two views list view, swipable view</Text>
-            <Text style={{textAlign:'center', fontWeight:'bold'}}>Enjoy the app</Text>
+            <Text style={{textAlign: 'center'}}>
+              This is simple and Amazing app
+            </Text>
+            <Text style={{textAlign: 'center'}}>
+              In this app, user can create his medicine reminder for the
+              medicines
+            </Text>
+            <Text style={{textAlign: 'center'}}>
+              The user can Manage is Medicine record, makes easy for changes and
+              erase the each record
+            </Text>
+            <Text style={{textAlign: 'center'}}>
+              User can view the record in two views list view, swipable view
+            </Text>
+            <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+              Enjoy the app
+            </Text>
 
             <Pressable
               style={[styles.button, styles.buttonClose]}
@@ -140,7 +236,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     backgroundColor: 'white',
     borderRadius: 20,
     width: width * 0.8,
@@ -174,7 +270,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     fontSize: height * 0.024,
     textAlign: 'center',
   },

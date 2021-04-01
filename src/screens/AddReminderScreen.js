@@ -14,10 +14,13 @@ import {Icon} from 'react-native-elements';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Context, MediMaintaaContext} from '../context/context';
+import {Picker} from '@react-native-picker/picker';
+
 import moment from 'moment';
 const {height, width} = Dimensions.get('window');
 export default function AddRemainderScreen(props) {
   const {state, setState} = React.useContext(MediMaintaaContext);
+  const [selectedCategory, setSelectedCategory] = React.useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [formState, setFormState] = React.useState({
@@ -52,8 +55,13 @@ export default function AddRemainderScreen(props) {
   }, [props.navigation]);
 
   const handleSubmit = () => {
-    if(formState.nameOfPill && formState.pillPerTime && formState.pillsPerDay && formState.endDate && formState.notes ){
-
+    if (
+      formState.nameOfPill &&
+      formState.pillPerTime &&
+      formState.pillsPerDay &&
+      formState.endDate &&
+      formState.notes
+    ) {
       setLoading(true);
       setTimeout(() => {
         if (props.route.params) {
@@ -74,8 +82,8 @@ export default function AddRemainderScreen(props) {
         });
         setLoading(false);
       }, 2000);
-    }else{
-      alert('please fill all details')
+    } else {
+      alert('please fill all details');
     }
   };
   const handleConfirm = date => {
@@ -110,6 +118,19 @@ export default function AddRemainderScreen(props) {
       ) : null}
       <KeyboardAwareScrollView
         contentContainerStyle={{flex: 1, justifyContent: 'space-around'}}>
+        <View>
+          <Text style={{fontWeight:'bold', }}>Choose Category</Text>
+          <View style={{backgroundColor: '#fff'}}>
+            <Picker
+              selectedValue={selectedCategory}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedCategory(itemValue)
+              }>
+              <Picker.Item label="Java" value="java" />
+              <Picker.Item label="JavaScript" value="js" />
+            </Picker>
+          </View>
+        </View>
         <View
           style={{
             width: width,
